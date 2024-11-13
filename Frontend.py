@@ -12,10 +12,9 @@ def main():
     with st.sidebar:
         st.markdown("<h2 style='text-align: center;'>User Inputs</h2>", unsafe_allow_html=True)
 
-        st.multiselect(
+        st.selectbox(
             "Portfolio size:",
-            options=[10, 15, 20, 25, 30, 40, 50],
-            default=[10, 20]
+            [10, 15, 20, 25, 30, 40, 50]
         )
 
         # Time period inputs
