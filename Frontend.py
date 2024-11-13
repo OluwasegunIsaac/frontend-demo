@@ -2,83 +2,85 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from PIL import Image
+import time
 
 def main():
     # Set the page layout to wide
     st.set_page_config(layout="wide")
-    
-    
+
+    st.markdown("""
+    <style>
+    .main-title {
+        font-size: 40px;
+        font-weight: bold;
+        text-align: center;
+    }
+    .section-title {
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+    }
+    .app-spacing {
+        margin-top: 30px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     # Sidebar configuration
     with st.sidebar:
         st.markdown("<h2 style='text-align: center;'>User Inputs</h2>", unsafe_allow_html=True)
 
-        st.selectbox(
+        # Portfolio size with a clearer title and tooltip
+        portfolio_size = st.selectbox(
             "Portfolio size:",
-            [10, 15, 20, 25, 30, 40, 50]
+            [10, 15, 20, 25, 30, 40, 50],
+            help="Select the number of assets in the portfolio."
         )
 
-        # Time period inputs
-        st.date_input("In-sample time period:", value=[pd.to_datetime("2019-01-01"), pd.to_datetime("2023-12-31")])
-        st.date_input("Out-of-sample period:", value=[pd.to_datetime("2024-01-01"), pd.to_datetime("2024-07-31")])
+        # Date range with a more informative label
+        st.date_input("Select in-sample time period:", value=[pd.to_datetime("2019-01-01"), pd.to_datetime("2023-12-31")])
+        st.date_input("Select out-of-sample period:", value=[pd.to_datetime("2024-01-01"), pd.to_datetime("2024-07-31")])
 
-        # Model selection
+        # Estimation model with description
         st.selectbox(
-            "Estimation model:",
-            ["Historical timeseries", "Fama-French 3-factor", "Fama-French 5-factor", "APCA"]
+            "Choose estimation model:",
+            ["Historical timeseries", "Fama-French 3-factor", "Fama-French 5-factor", "APCA"],
+            help="Select the estimation model for asset selection."
         )
 
-        # Bounds on weights
-        st.slider("minWeight:", 0, 20, 3)
-        st.slider("maxWeight:", 10, 50, 13)
-
-        # Comparison benchmarks
+        # Weights bounds with tooltips
+        st.slider("Min weight:", 0, 20, 3, help="Set the minimum weight of the assets.")
+        st.slider("Max weight:", 10, 50, 13, help="Set the maximum weight of the assets.")
+        
+        # Multi-select comparison benchmarks with descriptions
         st.multiselect(
             "Comparison benchmarks:",
             options=["S&P500 index", "Russell 3000 index", "Dow Jones index", "NASDAQ Composite", "Popular invest funds"],
-            default=["S&P500 index"]
+            default=["S&P500 index"],
+            help="Choose benchmark indexes for comparison."
         )
 
-        st.button("Run", type="primary", use_container_width=True)
+        # Action button with styling
+        if st.button("Run", type="primary", use_container_width=True):
+            with st.spinner('Processing...'):
+                time.sleep(3)
+                st.success('Done!')
 
-    # Main content
-    _, col1, _ = st.columns(3)
+    # Main content layout
+    _, col1, _ = st.columns([1, 3, 1])
     with col1:
-        st.markdown("""
-            <style>
-            .app-spacing {
-                margin-top: 0px;
-                margin-bottom: -40px;
-            }
-            </style>
-            """, unsafe_allow_html=True)
+        st.markdown("<h1 class='main-title'>Outputs</h1>", unsafe_allow_html=True)
 
-        app_name = """
-            <div class='app-spacing' style="padding:4px">
-            <h1 style='text-align: center; font-size: 40px;'>Outputs</h1>
-            </div>
-        """
-        st.markdown(app_name, unsafe_allow_html=True)
+    # Sections with images
+    image_titles = ["Asset Selection", "In-sample Efficient Frontiers", "Out-of-sample Cumulative Returns", "Out-of-sample Risk and Reward"]
+    image_paths = ["placeholder_images/fig1.png", "placeholder_images/fig2.png", "placeholder_images/fig3.png", "placeholder_images/fig4.png"]
 
-    _, col1, _ = st.columns([1,3,1])
-    with col1:
-        st.markdown("<h1 style='text-align: center; font-size: 24px;'>ChatGPT Asset Selection</h1>",unsafe_allow_html=True)
-    asset_selection_image = Image.open("placeholder_images/fig1.png")
-    st.image(asset_selection_image, use_column_width=True)
-    _, col1, _ = st.columns([1,3,1])
-    with col1:
-        st.markdown("<h1 style='text-align: center; font-size: 24px;'>In-sample Efficient Frontiers</h1>",unsafe_allow_html=True)
-    efficient_frontier_image = Image.open("placeholder_images/fig2.png")
-    st.image(efficient_frontier_image, use_column_width=True)
-    _, col1, _ = st.columns([1,3,1])
-    with col1:
-        st.markdown("<h1 style='text-align: center; font-size: 24px;'>Out-of-Sample Cumulative Returns</h1>",unsafe_allow_html=True)
-    cum_image = Image.open("placeholder_images/fig3.png")
-    st.image(cum_image, use_column_width=True)
-    _, col1, _ = st.columns([1,3,1])
-    with col1:
-        st.markdown("<h1 style='text-align: center; font-size: 24px;'>Out-of-Sample Risk and Reward Measures</h1>",unsafe_allow_html=True)
-    reward_image = Image.open("placeholder_images/fig4.png")
-    st.image(reward_image, use_column_width=True)
+    for title, image_path in zip(image_titles, image_paths):
+        _, col1, _ = st.columns([1, 3, 1])
+        with col1:
+            st.markdown(f"<h2 class='section-title'>{title}</h2>", unsafe_allow_html=True)
+        image = Image.open(image_path)
+        st.image(image, use_column_width=True)
 
 
 if __name__ == "__main__":
